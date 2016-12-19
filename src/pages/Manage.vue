@@ -51,7 +51,7 @@ export default {
       }).then(resp => {
         this.loading = false;
         this.results = resp.data.orders;
-        this.orderCount = Match.floor(resp.data.total / 15);
+        this.orderCount = Math.floor(resp.data.total / 15);
       })
     }
   },

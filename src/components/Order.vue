@@ -37,8 +37,8 @@
       formatType(row, column) {
         let locationType = '';
         switch(parseInt(row.type, 10)) {
-          case 1: locationType = '大会议室'; break;
-          case 2: locationType = '小会议室'; break;
+          case 1: locationType = '小会议室'; break;
+          case 2: locationType = '大会议室'; break;
           case 3: locationType = '咖啡位'; break;
           default: locationType = '请确认类型'; break;
         }
