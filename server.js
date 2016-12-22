@@ -34,9 +34,17 @@ app.get('/api/order_list', (req, res, next) => {
   ]).then(db => {
     res.json({ success: true, orders: db[0], total: db[1].length });
   })
-  // db.all(`SELECT * FROM 'ORDER' LIMIT ? OFFSET ?`, per, per * offset).then(order_list => {
-  //   res.json({ success: true, orders: order_list, total: order_list });
-  // })
+})
+
+app.get('/api/account_list', (req, res) => {
+  const offset = req.query && req.query.offset || 0;
+  const per = 15;
+  Promise.all([
+    db.all(`SELECT * FROM 'COMPANY' LIMIT ? OFFSET ?`, per, per * offset),
+    db.all(`SELECT * FROM 'COMPANY'`)
+  ]).then(db => {
+    res.json({ success: true, company: db[0], total: db[1].length });
+  })
 })
 
 const port = 7777;
