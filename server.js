@@ -42,8 +42,8 @@ app.get('/api/account_list', (req, res) => {
   Promise.all([
     db.all(`SELECT * FROM 'COMPANY' LIMIT ? OFFSET ?`, per, per * offset),
     db.all(`SELECT * FROM 'COMPANY'`)
-  ]).then(db => {
-    res.json({ success: true, company: db[0], total: db[1].length });
+  ]).then(([company, total]) => {
+    res.json({ success: true, company: company, total: total.length });
   })
 })
 
