@@ -1,22 +1,24 @@
 <template>
-  <div v-if="!loading" class="layout">
-    <nav-menu @selectMenu="onChangeMenu"></nav-menu>
-    <order :resultData="results" v-show="selected == 1"></order>
-    <company :companies="companies" v-show="selected == 2"></company>
-    <div class="pagination">
-      <el-pagination
-        layout="prev, pager, next"
-        :total="paginationCount"
-        :page-size="pageSize"
-        @current-change="handleChange"></el-pagination>
+  <div class="layout">
+    <div v-show="!loading" class="layout">
+      <nav-menu @selectMenu="onChangeMenu"></nav-menu>
+      <order :resultData="results" v-show="selected == 1"></order>
+      <company :companies="companies" v-show="selected == 2"></company>
+      <div class="pagination">
+        <el-pagination
+          layout="prev, pager, next"
+          :total="paginationCount"
+          :page-size="pageSize"
+          @current-change="handleChange"></el-pagination>
+      </div>
     </div>
-  </div>
-  <div v-else>
-    <el-alert
-    title="正在读取，请稍后...."
-    type="info"
-    close-text="知道了">
-  </el-alert>
+    <div v-show="loading">
+      <el-alert
+        title="正在读取，请稍后...."
+        type="info"
+        close-text="知道了">
+      </el-alert>
+    </div>
   </div>
 </template>
 
@@ -50,17 +52,17 @@ export default {
       this.selected = parseInt(index, 10);
       switch (parseInt(index, 10)) {
         case 1: this.paginationCount = this.orderCount || 15; break;
-        case 2: this.loadCompany (); this.paginationCount = this.companyCount || 15; break;
+        case 2: this.loadCompany(0); break;
         default: this.paginationCount = 15; break;
       }
     },
     handleChange (val) {
-      this.load(val);
+      this.load(val-1);
     },
     load(offset) {
-      this.loading = true;
       if (this.selected === 1) {
         // order
+        this.loading = true;
         return axios.get('/api/order_list', {
           params: {
             offset,
@@ -72,12 +74,21 @@ export default {
         })
       } else {
         // company
-        console.log(offset);
-        this.loading = false;
+        this.loadCompany(offset)
       }
     },
-    loadCompany() {
-      this.companies = customers.company;
+    loadCompany(offset) {
+      this.loading = true;
+      return axios.get('/api/account_list', {
+        params: {
+          offset,
+        }
+      }).then(resp => {
+        this.loading = false;
+        this.companies = resp.data.company;
+        this.paginationCount = this.companyCount || 15;
+        // this.$forceUpdate(); v-if 不重新渲染， 用forceupdate tab focus出现bug
+      })
     },
   },
 }
