@@ -13,26 +13,43 @@
       size="large"
       type='password'
       placeholder="请输入密码"
-      v-model="passward">
+      v-model="password">
     </el-input>
     <div class="loginButton">
-      <el-button type="primary" :disabled="!name || !passward" @click="login">立即登陆</el-button>
+      <el-button type="primary" :disabled="!name || !password" @click="login">立即登陆</el-button>
     </div>
   </div>
 </template>
 
 <script>
+  import axios from 'axios';
+  import { Current } from '../utils/user';
   export default {
     data() {
       return {
         name: '',
-        passward: '',
+        password: '',
       }
+    },
+    mounted() {
+      let user = localStorage.getItem('CURRENT_USER');
+      user = JSON.parse(user);
+      if(user) this.$router.push('manage');
     },
     methods: {
       login () {
-        if (this.name != 'wizwork' && this.password != 'qwertyuiop') return alert('账号或密码错误');
-        this.$router.push('manage');
+        axios.post('/api/login', {
+          password: this.password,
+          name: this.name,
+        }).then(({ data }) => {
+          if (data.success) {
+            Current.init(data.user);
+            localStorage.setItem('CURRENT_USER', JSON.stringify(data.user))
+            this.$router.push('manage');
+            return;
+          }
+          alert('账号或者密码错误');
+        })
       },
     },
   }

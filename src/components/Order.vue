@@ -2,6 +2,7 @@
   <el-table
     :data="resultData"
     stripe
+    v-loading="loading"
     style="width: 100%">
     <el-table-column prop="name" label="姓名" width="100"></el-table-column>
     <el-table-column prop="mobile" label="电话" width="150"></el-table-column>
@@ -15,7 +16,7 @@
 
 <script>
   export default {
-    props: ['resultData'],
+    props: ['resultData', 'loading'],
     methods: {
       formatTime(row, column) {
         const date = new Date(row.start);
